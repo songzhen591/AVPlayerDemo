@@ -8,6 +8,8 @@
 
 #import "SZMovieBottomView.h"
 
+static const CGFloat timeLabelW = 80;
+
 @implementation SZMovieBottomView
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -16,7 +18,6 @@
         
         self.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.4];
         [self setupSubViews];
-        
     }
     return self;
 }
@@ -24,21 +25,21 @@
 - (void)setupSubViews
 {
     _playButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [_playButton setBackgroundImage:[UIImage imageNamed:@"ad_play_p"] forState:UIControlStateNormal];     //正常
-    [_playButton setBackgroundImage:[UIImage imageNamed:@"ad_pause_p"] forState:UIControlStateSelected];  //播放
+    [_playButton setBackgroundImage:[UIImage imageNamed:@"ad_play_p"] forState:UIControlStateNormal];     //暂停状态
+    [_playButton setBackgroundImage:[UIImage imageNamed:@"ad_pause_p"] forState:UIControlStateSelected];  //播放状态
     [_playButton addTarget:self action:@selector(playOrPause) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:_playButton];
     
     
     _currentTimeLabel = [[UILabel alloc] init];
-    _currentTimeLabel.text = @"00:00";
+    _currentTimeLabel.text = @"00:00:00";
     _currentTimeLabel.textColor = [UIColor whiteColor];
     _currentTimeLabel.font = [UIFont systemFontOfSize:14];
     _currentTimeLabel.textAlignment = NSTextAlignmentCenter;
     [self addSubview:_currentTimeLabel];
     
     _totalDurationLabel = [[UILabel alloc] init];
-    _totalDurationLabel.text = @"00：00";
+    _totalDurationLabel.text = @"00:00:00";
     _totalDurationLabel.textColor = [UIColor whiteColor];
     _totalDurationLabel.font = [UIFont systemFontOfSize:14];
     _totalDurationLabel.textAlignment = NSTextAlignmentCenter;
@@ -70,10 +71,9 @@
     _playButton.frame = CGRectMake(playButtonX, playButtonY, playButtonWH, playButtonWH);
     
     CGFloat currentTimeX = CGRectGetMaxX(_playButton.frame) + 10;
-    CGFloat currentTimeW = 40;
     CGFloat currentTimeH = 20;
     CGFloat currentTimeY = (self.bounds.size.height - currentTimeH) * 0.5;
-    _currentTimeLabel.frame = CGRectMake(currentTimeX, currentTimeY, currentTimeW, currentTimeH);
+    _currentTimeLabel.frame = CGRectMake(currentTimeX, currentTimeY, timeLabelW, currentTimeH);
     
     CGFloat sliderX = CGRectGetMaxX(_currentTimeLabel.frame) + 10;
     CGFloat sliderH = 5;
@@ -88,7 +88,7 @@
 
     
     CGFloat totalDurationX = CGRectGetMaxX(_movieProgressSlider.frame) + 10;
-    _totalDurationLabel.frame = CGRectMake(totalDurationX, currentTimeY, currentTimeW, currentTimeH);
+    _totalDurationLabel.frame = CGRectMake(totalDurationX, currentTimeY, timeLabelW, currentTimeH);
     
 }
 
