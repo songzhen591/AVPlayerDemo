@@ -10,6 +10,10 @@
 		DC0C4CEC1CEC64F5000470A7 /* ad_play_p@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC0C4CEB1CEC64F5000470A7 /* ad_play_p@2x.png */; };
 		DC0C4CEE1CEC6507000470A7 /* ad_pause_p@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC0C4CED1CEC6507000470A7 /* ad_pause_p@2x.png */; };
 		DC0C4CF01CEC675B000470A7 /* progressThumb@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DC0C4CEF1CEC675B000470A7 /* progressThumb@2x.png */; };
+		DC2117971CEE9CC800B0AD1F /* SZMovieVolumeView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2117961CEE9CC800B0AD1F /* SZMovieVolumeView.m */; };
+		DC21179A1CEE9DBF00B0AD1F /* yinliangda.png in Resources */ = {isa = PBXBuildFile; fileRef = DC2117981CEE9DBF00B0AD1F /* yinliangda.png */; };
+		DC21179B1CEE9DBF00B0AD1F /* yinliangxiao.png in Resources */ = {isa = PBXBuildFile; fileRef = DC2117991CEE9DBF00B0AD1F /* yinliangxiao.png */; };
+		DC2117A11CEEFC9700B0AD1F /* SZMoviePlayRateView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC2117A01CEEFC9700B0AD1F /* SZMoviePlayRateView.m */; };
 		DC4035FA1CEB0EA40063C0D1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DC4035F91CEB0EA40063C0D1 /* main.m */; };
 		DC4035FD1CEB0EA40063C0D1 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DC4035FC1CEB0EA40063C0D1 /* AppDelegate.m */; };
 		DC4036001CEB0EA40063C0D1 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DC4035FF1CEB0EA40063C0D1 /* ViewController.m */; };
@@ -46,6 +50,12 @@
 		DC0C4CEB1CEC64F5000470A7 /* ad_play_p@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ad_play_p@2x.png"; sourceTree = "<group>"; };
 		DC0C4CED1CEC6507000470A7 /* ad_pause_p@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ad_pause_p@2x.png"; sourceTree = "<group>"; };
 		DC0C4CEF1CEC675B000470A7 /* progressThumb@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "progressThumb@2x.png"; sourceTree = "<group>"; };
+		DC2117951CEE9CC800B0AD1F /* SZMovieVolumeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SZMovieVolumeView.h; sourceTree = "<group>"; };
+		DC2117961CEE9CC800B0AD1F /* SZMovieVolumeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SZMovieVolumeView.m; sourceTree = "<group>"; };
+		DC2117981CEE9DBF00B0AD1F /* yinliangda.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = yinliangda.png; sourceTree = "<group>"; };
+		DC2117991CEE9DBF00B0AD1F /* yinliangxiao.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = yinliangxiao.png; sourceTree = "<group>"; };
+		DC21179F1CEEFC9700B0AD1F /* SZMoviePlayRateView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SZMoviePlayRateView.h; sourceTree = "<group>"; };
+		DC2117A01CEEFC9700B0AD1F /* SZMoviePlayRateView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SZMoviePlayRateView.m; sourceTree = "<group>"; };
 		DC4035F51CEB0EA40063C0D1 /* AVPlayerDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AVPlayerDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC4035F91CEB0EA40063C0D1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		DC4035FB1CEB0EA40063C0D1 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -104,6 +114,8 @@
 				DC0C4CEF1CEC675B000470A7 /* progressThumb@2x.png */,
 				DC0C4CEB1CEC64F5000470A7 /* ad_play_p@2x.png */,
 				DC0C4CED1CEC6507000470A7 /* ad_pause_p@2x.png */,
+				DC2117981CEE9DBF00B0AD1F /* yinliangda.png */,
+				DC2117991CEE9DBF00B0AD1F /* yinliangxiao.png */,
 			);
 			path = Resource;
 			sourceTree = "<group>";
@@ -183,6 +195,10 @@
 				DC4036351CEB11460063C0D1 /* SZMovieTopView.m */,
 				DC4036371CEB19570063C0D1 /* SZMovieBottomView.h */,
 				DC4036381CEB19570063C0D1 /* SZMovieBottomView.m */,
+				DC2117951CEE9CC800B0AD1F /* SZMovieVolumeView.h */,
+				DC2117961CEE9CC800B0AD1F /* SZMovieVolumeView.m */,
+				DC21179F1CEEFC9700B0AD1F /* SZMoviePlayRateView.h */,
+				DC2117A01CEEFC9700B0AD1F /* SZMoviePlayRateView.m */,
 			);
 			name = SZMoviePlayer;
 			sourceTree = "<group>";
@@ -254,6 +270,11 @@
 				TargetAttributes = {
 					DC4035F41CEB0EA40063C0D1 = {
 						CreatedOnToolsVersion = 7.3;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 					DC40360D1CEB0EA40063C0D1 = {
 						CreatedOnToolsVersion = 7.3;
@@ -290,7 +311,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DC21179B1CEE9DBF00B0AD1F /* yinliangxiao.png in Resources */,
 				DC4036081CEB0EA40063C0D1 /* LaunchScreen.storyboard in Resources */,
+				DC21179A1CEE9DBF00B0AD1F /* yinliangda.png in Resources */,
 				DC4036051CEB0EA40063C0D1 /* Assets.xcassets in Resources */,
 				DC0C4CF01CEC675B000470A7 /* progressThumb@2x.png in Resources */,
 				DC4036031CEB0EA40063C0D1 /* Main.storyboard in Resources */,
@@ -323,9 +346,11 @@
 			files = (
 				DC4036301CEB0F2D0063C0D1 /* SZMoviePlayerViewController.m in Sources */,
 				DC4036001CEB0EA40063C0D1 /* ViewController.m in Sources */,
+				DC2117A11CEEFC9700B0AD1F /* SZMoviePlayRateView.m in Sources */,
 				DC4036361CEB11460063C0D1 /* SZMovieTopView.m in Sources */,
 				DC4036391CEB19570063C0D1 /* SZMovieBottomView.m in Sources */,
 				DC4035FD1CEB0EA40063C0D1 /* AppDelegate.m in Sources */,
+				DC2117971CEE9CC800B0AD1F /* SZMovieVolumeView.m in Sources */,
 				DC4035FA1CEB0EA40063C0D1 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
