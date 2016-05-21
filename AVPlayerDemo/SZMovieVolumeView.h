@@ -8,8 +8,18 @@
 
 #import <UIKit/UIKit.h>
 
+@class SZMovieVolumeView;
+@protocol SZMovieVolumeViewDelegate <NSObject>
+
+@optional
+- (void)volumeViewDidDragging:(SZMovieVolumeView *)volumeView;
+
+@end
+
 @interface SZMovieVolumeView : UIView
 
 @property (strong, nonatomic) UISlider *volumeSlider;
+
+@property (assign, nonatomic) id<SZMovieVolumeViewDelegate> delegate;
 
 @end

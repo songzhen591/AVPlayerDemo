@@ -59,18 +59,11 @@
 - (UISlider *)volumeSlider
 {
     if (!_volumeSlider) {
-        
-        //获取系统的音量控制UI
-        MPVolumeView *volumeView = [[MPVolumeView alloc] init];
-        for (UIView *view in [volumeView subviews]){
-            if ([view.class.description isEqualToString:@"MPVolumeSlider"]){
-                _volumeSlider = (UISlider*)view;
-                break;
-            }
-        }
-        [_volumeSlider sendActionsForControlEvents:UIControlEventTouchUpInside];
+        _volumeSlider = [[UISlider alloc] init];
         [_volumeSlider setThumbImage:[UIImage imageNamed:@"progressThumb"] forState:UIControlStateNormal];
         [_volumeSlider setThumbImage:[UIImage imageNamed:@"progressThumb"] forState:UIControlStateHighlighted];
+        [_volumeSlider sendActionsForControlEvents:UIControlEventTouchUpInside];
+        [_volumeSlider addTarget:self action:@selector(valueChanged:) forControlEvents:UIControlEventValueChanged];
     }
     return _volumeSlider;
 }
@@ -95,6 +88,12 @@
     _volumeDonwnImageView.frame = CGRectMake(0, downImageY, imageWH, imageWH);
 }
 
+- (void)valueChanged:(UISlider *)slider
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(volumeViewDidDragging:)]) {
+        [self.delegate volumeViewDidDragging:self];
+    }
+}
 
 
 @end

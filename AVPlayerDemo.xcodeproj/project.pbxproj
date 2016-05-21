@@ -26,7 +26,9 @@
 		DC4036321CEB0FFA0063C0D1 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DC4036311CEB0FFA0063C0D1 /* AVFoundation.framework */; };
 		DC4036361CEB11460063C0D1 /* SZMovieTopView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC4036351CEB11460063C0D1 /* SZMovieTopView.m */; };
 		DC4036391CEB19570063C0D1 /* SZMovieBottomView.m in Sources */ = {isa = PBXBuildFile; fileRef = DC4036381CEB19570063C0D1 /* SZMovieBottomView.m */; };
-		DC40363B1CEB27B00063C0D1 /* chenyifaer.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = DC40363A1CEB27B00063C0D1 /* chenyifaer.mp4 */; };
+		DCB3E1DF1CF0542C005808DB /* ico_palyer_circle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DCB3E1DE1CF0542C005808DB /* ico_palyer_circle@2x.png */; };
+		DCB3E1E21CF055A6005808DB /* player_back@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DCB3E1E01CF055A6005808DB /* player_back@2x.png */; };
+		DCB3E1E31CF055A6005808DB /* player_goforward@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = DCB3E1E11CF055A6005808DB /* player_goforward@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,7 +81,9 @@
 		DC4036351CEB11460063C0D1 /* SZMovieTopView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SZMovieTopView.m; sourceTree = "<group>"; };
 		DC4036371CEB19570063C0D1 /* SZMovieBottomView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SZMovieBottomView.h; sourceTree = "<group>"; };
 		DC4036381CEB19570063C0D1 /* SZMovieBottomView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SZMovieBottomView.m; sourceTree = "<group>"; };
-		DC40363A1CEB27B00063C0D1 /* chenyifaer.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = chenyifaer.mp4; sourceTree = "<group>"; };
+		DCB3E1DE1CF0542C005808DB /* ico_palyer_circle@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico_palyer_circle@2x.png"; sourceTree = "<group>"; };
+		DCB3E1E01CF055A6005808DB /* player_back@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "player_back@2x.png"; sourceTree = "<group>"; };
+		DCB3E1E11CF055A6005808DB /* player_goforward@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "player_goforward@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,6 +115,9 @@
 		DC0C4CE61CEC5E4B000470A7 /* Resource */ = {
 			isa = PBXGroup;
 			children = (
+				DCB3E1E01CF055A6005808DB /* player_back@2x.png */,
+				DCB3E1E11CF055A6005808DB /* player_goforward@2x.png */,
+				DCB3E1DE1CF0542C005808DB /* ico_palyer_circle@2x.png */,
 				DC0C4CEF1CEC675B000470A7 /* progressThumb@2x.png */,
 				DC0C4CEB1CEC64F5000470A7 /* ad_play_p@2x.png */,
 				DC0C4CED1CEC6507000470A7 /* ad_pause_p@2x.png */,
@@ -123,7 +130,6 @@
 		DC4035EC1CEB0EA40063C0D1 = {
 			isa = PBXGroup;
 			children = (
-				DC40363A1CEB27B00063C0D1 /* chenyifaer.mp4 */,
 				DC4036311CEB0FFA0063C0D1 /* AVFoundation.framework */,
 				DC4035F71CEB0EA40063C0D1 /* AVPlayerDemo */,
 				DC4036111CEB0EA40063C0D1 /* AVPlayerDemoTests */,
@@ -313,11 +319,13 @@
 			files = (
 				DC21179B1CEE9DBF00B0AD1F /* yinliangxiao.png in Resources */,
 				DC4036081CEB0EA40063C0D1 /* LaunchScreen.storyboard in Resources */,
+				DCB3E1E21CF055A6005808DB /* player_back@2x.png in Resources */,
+				DCB3E1E31CF055A6005808DB /* player_goforward@2x.png in Resources */,
 				DC21179A1CEE9DBF00B0AD1F /* yinliangda.png in Resources */,
 				DC4036051CEB0EA40063C0D1 /* Assets.xcassets in Resources */,
+				DCB3E1DF1CF0542C005808DB /* ico_palyer_circle@2x.png in Resources */,
 				DC0C4CF01CEC675B000470A7 /* progressThumb@2x.png in Resources */,
 				DC4036031CEB0EA40063C0D1 /* Main.storyboard in Resources */,
-				DC40363B1CEB27B00063C0D1 /* chenyifaer.mp4 in Resources */,
 				DC0C4CEC1CEC64F5000470A7 /* ad_play_p@2x.png in Resources */,
 				DC0C4CEE1CEC6507000470A7 /* ad_pause_p@2x.png in Resources */,
 			);

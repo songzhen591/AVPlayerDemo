@@ -7,17 +7,13 @@
 //
 
 #import "SZMoviePlayRateView.h"
-static const CGFloat labelFont = 13.0f;
+static const CGFloat labelFont = 14.0f;
 
 @interface SZMoviePlayRateView ()
 
 @property (strong, nonatomic) UIImageView *imageView;
 
-
-
 @property (strong, nonatomic) UILabel *midLabel;
-
-
 
 @end
 
@@ -55,7 +51,7 @@ static const CGFloat labelFont = 13.0f;
         _timeLabel = [[UILabel alloc] init];
         _timeLabel.text = @"00:00:00";
         _timeLabel.font = [UIFont systemFontOfSize:labelFont];
-        _timeLabel.textAlignment = NSTextAlignmentCenter;
+        _timeLabel.textAlignment = NSTextAlignmentRight;
         _timeLabel.textColor = [UIColor orangeColor];
     }
     return _timeLabel;
@@ -67,7 +63,7 @@ static const CGFloat labelFont = 13.0f;
         _durationLabel = [[UILabel alloc] init];
         _durationLabel.text = @"00:00:00";
         _durationLabel.font = [UIFont systemFontOfSize:labelFont];
-        _durationLabel.textAlignment = NSTextAlignmentCenter;
+        _durationLabel.textAlignment = NSTextAlignmentLeft;
         _durationLabel.textColor = [UIColor whiteColor];
     }
     return _durationLabel;
@@ -106,5 +102,14 @@ static const CGFloat labelFont = 13.0f;
     
 }
 
+- (void)setIsGoForward:(BOOL)isGoForward
+{
+    _isGoForward = isGoForward;
+    if (_isGoForward) {
+        _imageView.image = [UIImage imageNamed:@"player_goforward"];
+    }else{
+        _imageView.image = [UIImage imageNamed:@"player_back"];
+    }
+}
 
 @end

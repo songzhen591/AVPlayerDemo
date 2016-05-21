@@ -14,24 +14,21 @@
 #import "SZMovieVolumeView.h"
 #import "SZMoviePlayRateView.h"
 
-static const CGFloat topViewH = 55;
-static const CGFloat bottomViewH = 60;
+static const CGFloat topViewH = 50;
+static const CGFloat bottomViewH = 50;
 static const CGFloat volumeViewW = 40;
 static const CGFloat volumeViewH = 200;
 
 
 typedef NS_ENUM(NSUInteger, PanGestureRecognizerDirection) {
-    PanGestureRecognizerDirectionHorizontal,
-    PanGestureRecognizerDirectionVertical
-    
-//    PanGestureRecognizerDirectionRight,
-//    PanGestureRecognizerDirectionLeft,
-//    PanGestureRecognizerDirectionUp,
-//    PanGestureRecognizerDirectionDown
+    PanGestureRecognizerDirectionUp,
+    PanGestureRecognizerDirectionDown,
+    PanGestureRecognizerDirectionLeft,
+    PanGestureRecognizerDirectionRight
 };
 
 
-@interface SZMoviePlayerViewController ()<SZMovieTopViewDelegate, SZMovieBottomViewDelegate>
+@interface SZMoviePlayerViewController ()<SZMovieTopViewDelegate, SZMovieBottomViewDelegate, SZMovieVolumeViewDelegate>
 {
     BOOL _played;                       //是否正在播放
     BOOL _isBlocked;                    //是否是否卡主(网络原因或视频质量)
@@ -40,31 +37,36 @@ typedef NS_ENUM(NSUInteger, PanGestureRecognizerDirection) {
     CGPoint _panBeginPoint;             //记录最初滑动的位置
 }
 
-//顶部view
-@property (strong, nonatomic) SZMovieTopView *topView;
 
-//底部view
-@property (strong, nonatomic) SZMovieBottomView *bottomView;
+@property (strong, nonatomic) SZMovieTopView *topView;                  //顶部view
 
-//音量view
-@property (strong, nonatomic) SZMovieVolumeView *volumeView;
+@property (strong, nonatomic) SZMovieBottomView *bottomView;            //底部view
 
-@property (strong, nonatomic) SZMoviePlayRateView *rateView;
+@property (strong, nonatomic) SZMovieVolumeView *volumeView;            //音量view
+
+@property (strong, nonatomic) SZMoviePlayRateView *rateView;            //进度提示view
 
 //核心播放
 @property (strong, nonatomic) AVPlayer *player;
 @property (strong, nonatomic) AVPlayerItem *playerItem;
 @property (strong, nonatomic) AVPlayerLayer *playerLayer;
 
-@property (nonatomic ,strong) id playbackTimeObserver;
 
+//音量
+@property (strong, nonatomic) MPVolumeView *systemVolumeView;
+@property (strong, nonatomic) UISlider *systemVolumeSlider;             //用来接收系统音量
+@property (assign, nonatomic) CGFloat currentVolume;                    //当前的系统音量
+@property (assign, nonatomic) CGFloat volumeSliderBeginValue;           //记录音量开始值,垂直滑动的开始值
+
+
+@property (nonatomic ,strong) id playbackTimeObserver;
 
 //touch event
 @property (assign, nonatomic) BOOL isDraggingSlider;                    //是否正在拖动底部slider控件
 @property (assign, nonatomic) BOOL isHorizontalSlideOnScreen;           //是否正在屏幕进行水平滑动
 @property (assign, nonatomic) BOOL ShowAroundingViews;                  //上，下，音量view是否显示
 @property (assign, nonatomic) CGFloat sliderBeginValue;                 //记录slider开始值
-@property (assign, nonatomic) CGFloat volumeSliderBeginValue;           //记录音量开始值
+
 
 @property (strong, nonatomic) UIActivityIndicatorView *activityInficatiorView;//小圈圈
 
@@ -118,6 +120,10 @@ typedef NS_ENUM(NSUInteger, PanGestureRecognizerDirection) {
     [self.view addGestureRecognizer:pan];
     
     [self viewNoDismiss];
+    
+    
+    //设置默认音量
+    self.volumeView.volumeSlider.value = [self deviceVolume];
 }
 
 - (void)addNotification
@@ -127,6 +133,11 @@ typedef NS_ENUM(NSUInteger, PanGestureRecognizerDirection) {
     
     //添加视频播放完毕通知
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlayDidEnd:) name:AVPlayerItemDidPlayToEndTimeNotification object:nil];
+    
+    //监听系统音量变化
+     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(volumeChanged:) name:@"AVSystemController_SystemVolumeDidChangeNotification" object:nil];
+    //让 UIApplication 开始响应远程的控制，必须添加，不然没效果
+    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
 }
 
 
@@ -152,6 +163,7 @@ typedef NS_ENUM(NSUInteger, PanGestureRecognizerDirection) {
 {
     if (!_volumeView) {
         _volumeView = [[SZMovieVolumeView alloc] init];
+        _volumeView.delegate = self;
     }
     return _volumeView;
 }
@@ -170,6 +182,27 @@ typedef NS_ENUM(NSUInteger, PanGestureRecognizerDirection) {
     }
     return _activityInficatiorView;
 }
+- (MPVolumeView *)systemVolumeView
+{
+    if (!_systemVolumeView) {
+        _systemVolumeView = [[MPVolumeView alloc] init];
+        _systemVolumeView.hidden = NO;
+    }
+    return _systemVolumeView;
+}
+
+- (UISlider *)systemVolumeSlider
+{
+    if (!_systemVolumeSlider) {
+        for (UIView *view in [self.systemVolumeView subviews]){
+            if ([view.class.description isEqualToString:@"MPVolumeSlider"]){
+                _systemVolumeSlider = (UISlider*)view;
+                break;
+            }
+        }
+    }
+    return _systemVolumeSlider;
+}
 
 #pragma mark - 播放器主体
 - (void)setupAvPlayer
@@ -177,7 +210,9 @@ typedef NS_ENUM(NSUInteger, PanGestureRecognizerDirection) {
     //http://baobab.cdn.wandoujia.com/14468618701471.mp4
     //http://v.jxvdy.com/sendfile/w5bgP3A8JgiQQo5l0hvoNGE2H16WbN09X-ONHPq3P3C1BISgf7C-qVs6_c8oaw3zKScO78I--b0BGFBRxlpw13sf2e54QA
     AVAudioSession *audioSesstion = [AVAudioSession sharedInstance];
+    [audioSesstion setActive:YES error:NULL];
     [audioSesstion setCategory:AVAudioSessionCategoryPlayback error:nil];
+    
     AVURLAsset *asset = [AVURLAsset assetWithURL:[NSURL URLWithString:@"http://baobab.cdn.wandoujia.com/14468618701471.mp4"]];
     _playerItem = [AVPlayerItem playerItemWithAsset:asset];
     [self addObserver];
@@ -218,6 +253,7 @@ typedef NS_ENUM(NSUInteger, PanGestureRecognizerDirection) {
             
             //开始播放
             [self moviePlay];
+            
         }
     }else if ([keyPath isEqualToString:@"loadedTimeRanges"]){
         if (playerItem.status == AVPlayerItemStatusReadyToPlay) {
@@ -378,12 +414,11 @@ typedef NS_ENUM(NSUInteger, PanGestureRecognizerDirection) {
     _bottomView.frame = CGRectMake(0, bottomViewY, self.view.bounds.size.width, bottomViewH);
     _activityInficatiorView.center = self.view.center;
     _activityInficatiorView.bounds = CGRectMake(0, 0, 50, 50);
-    
     _rateView.center = self.view.center;
-    _rateView.bounds = CGRectMake(0, 0, 150, 80);
+    _rateView.bounds = CGRectMake(0, 0, 120, 80);
 }
 
-#pragma mark - ************** 更新视图UI
+#pragma mark - ************** 更新操作
 
 #pragma mark 更新当前播放时间
 - (void)updateCurrentTimeLabel
@@ -391,6 +426,13 @@ typedef NS_ENUM(NSUInteger, PanGestureRecognizerDirection) {
     NSString *timeString = [self convertTime:self.movieCurrentTime];
     self.bottomView.currentTimeLabel.text = [NSString stringWithFormat:@"%@", timeString];
     self.rateView.timeLabel.text = [NSString stringWithFormat:@"%@", timeString];
+    
+    
+    if (_panDirection == PanGestureRecognizerDirectionRight) {
+        self.rateView.isGoForward = YES;
+    }else{
+        self.rateView.isGoForward = NO;
+    }
 }
 #pragma mark 更新底部进度条
 - (void)updateMovieSlider
@@ -405,7 +447,19 @@ typedef NS_ENUM(NSUInteger, PanGestureRecognizerDirection) {
     [_bottomView.progressView setProgress:timeInterval / _movieTotalDuration];
 }
 
+#pragma mark - 更新自定义的音量view
+- (void)updateCustomVolumeView
+{
+    self.volumeView.volumeSlider.value = self.currentVolume;
+}
+#pragma mark - 更新系统音量
+- (void)updateSystemVolume
+{
+    self.systemVolumeSlider.value = self.currentVolume;
+}
+
 #pragma mark - ************************关于手势的操作*******************************************
+#pragma mark 轻击手势
 - (void)tapBackgroundView:(UITapGestureRecognizer *)tap
 {
     [self viewNoDismiss];
@@ -416,6 +470,7 @@ typedef NS_ENUM(NSUInteger, PanGestureRecognizerDirection) {
         [self showAroundingViews];
     }
 }
+#pragma mark 拖动手势
 - (void)panOnBackgroundView:(UIPanGestureRecognizer *)pan
 {
     [self viewNoDismiss];
@@ -423,16 +478,21 @@ typedef NS_ENUM(NSUInteger, PanGestureRecognizerDirection) {
     CGPoint velocityPoint = [pan velocityInView:self.view];
     //确定滑动方向
     switch (pan.state) {
-        case UIGestureRecognizerStateBegan:
-            
+        case UIGestureRecognizerStateBegan:{
             //判断移动方向
-            if (fabs(velocityPoint.x) > fabs(velocityPoint.y)) {
-                _panDirection = PanGestureRecognizerDirectionHorizontal;
-                
-                //显示rateview
-                self.rateView.hidden = NO;
+            BOOL isVerticalGesture = (fabs(velocityPoint.y) > fabs(velocityPoint.x));
+            if (isVerticalGesture) {
+                if (velocityPoint.y > 0) {
+                    _panDirection = PanGestureRecognizerDirectionDown;
+                }else{
+                    _panDirection = PanGestureRecognizerDirectionUp;
+                }
             }else{
-                _panDirection = PanGestureRecognizerDirectionVertical;
+                if (velocityPoint.x > 0) {
+                    _panDirection = PanGestureRecognizerDirectionRight;
+                }else{
+                    _panDirection = PanGestureRecognizerDirectionLeft;
+                }
             }
             //记录开始的位置
             _panBeginPoint = [pan locationInView:self.view];
@@ -441,13 +501,24 @@ typedef NS_ENUM(NSUInteger, PanGestureRecognizerDirection) {
             //记录开始音量
             _volumeSliderBeginValue = _volumeView.volumeSlider.value;
             break;
-        case UIGestureRecognizerStateChanged:
+        }
+        case UIGestureRecognizerStateChanged:{
             switch (_panDirection) {
-                case PanGestureRecognizerDirectionHorizontal:
+                case PanGestureRecognizerDirectionLeft: case PanGestureRecognizerDirectionRight:
+                    
+                    //需要继续判断用户左滑还是右滑
+                    if (velocityPoint.x > 0) {
+                        _panDirection = PanGestureRecognizerDirectionRight;
+                    }else{
+                        _panDirection = PanGestureRecognizerDirectionLeft;
+                    }
+                    //显示rateview
+                    self.rateView.hidden = NO;
                     //水平滑动中
                     [self horizontalMovingOnScreen:pan];
+                    
                     break;
-                case PanGestureRecognizerDirectionVertical:
+                case PanGestureRecognizerDirectionUp: case PanGestureRecognizerDirectionDown:
                     //垂直滑动中
                     [self verticalMovingOnScreen:pan];
                     break;
@@ -455,13 +526,13 @@ typedef NS_ENUM(NSUInteger, PanGestureRecognizerDirection) {
                     break;
             }
             break;
-        case UIGestureRecognizerStateEnded:
-            
+        }
+        case UIGestureRecognizerStateEnded:{
             switch (_panDirection) {
-                case PanGestureRecognizerDirectionHorizontal:
+                case PanGestureRecognizerDirectionRight: case PanGestureRecognizerDirectionLeft:
                     [self horizontalMoveEnd:pan];
                     break;
-                case PanGestureRecognizerDirectionVertical:
+                case PanGestureRecognizerDirectionDown: case PanGestureRecognizerDirectionUp:
                     [self verticalMoveEnd:pan];
                     break;
                     
@@ -469,52 +540,96 @@ typedef NS_ENUM(NSUInteger, PanGestureRecognizerDirection) {
                     break;
             }
             break;
+        }
         default:
             break;
     }
 }
 
-#pragma mark - pan
+#pragma mark - 横向滑动， 视频快进
 - (void)horizontalMovingOnScreen:(UIPanGestureRecognizer *)pan
 {
-    
     _isHorizontalSlideOnScreen = YES;
     
     //更改底部slider和当前时间
     CGFloat changedX = [pan locationInView:self.view].x - _panBeginPoint.x;
     CGFloat panScale = changedX / self.view.bounds.size.width;
     _movieCurrentTime = _sliderBeginValue + (_bottomView.movieProgressSlider.maximumValue *panScale);
+    
+    //保证已播放时间可用
+    if (_movieCurrentTime < 0) {
+        _movieCurrentTime = 0;
+    }
+    if (_movieCurrentTime > _movieTotalDuration) {
+        _movieCurrentTime = _movieTotalDuration;
+    }
+    
+    //更新UI
     [self updateMovieSlider];
     [self updateCurrentTimeLabel];
+    
 }
-
-- (void)verticalMovingOnScreen:(UIPanGestureRecognizer *)pan
-{
-    //调节音量
-    CGFloat changedY = _panBeginPoint.y - [pan locationInView:self.view].y;
-    CGFloat panScale = changedY / self.view.bounds.size.height;
-    [_volumeView.volumeSlider setValue:(_volumeSliderBeginValue + panScale) animated:YES];
-}
-
-#pragma mark - pan end
 - (void)horizontalMoveEnd:(UIPanGestureRecognizer *)pan
 {
     self.rateView.hidden = YES;
     
     //滑动停止时，视频跳转
-    CMTime changedTime = CMTimeMake(_bottomView.movieProgressSlider.value, 1);
+//    CMTime changedTime = CMTimeMake(_bottomView.movieProgressSlider.value, 1);
+//    NSLog(@"%f , %d" , _currentVolume, self.player.currentItem.asset.duration.timescale);
+    CMTime changedTime = CMTimeMakeWithSeconds(_movieCurrentTime, self.player.currentItem.asset.duration.timescale);
+    
+    
+    
     __weak typeof(self) weakSelf = self;
-    [self.player seekToTime:changedTime completionHandler:^(BOOL finished) {
-        
+//    [self.player seekToTime:changedTime completionHandler:^(BOOL finished) {
+//        
+//        [weakSelf moviePlay];
+//        _sliderBeginValue = _bottomView.movieProgressSlider.value;
+//        _isHorizontalSlideOnScreen = NO;
+//    }];
+
+    [self.player seekToTime:changedTime toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:^(BOOL finished) {
         [weakSelf moviePlay];
         _sliderBeginValue = _bottomView.movieProgressSlider.value;
         _isHorizontalSlideOnScreen = NO;
     }];
-    
 }
+
+#pragma mark - 竖直滑动手势， 关于音量操作
+- (void)verticalMovingOnScreen:(UIPanGestureRecognizer *)pan
+{
+    //改变系统音量
+    CGFloat changedY = _panBeginPoint.y - [pan locationInView:self.view].y;
+    CGFloat panScale = changedY / self.view.bounds.size.height;
+    self.currentVolume = _volumeSliderBeginValue +  panScale;
+    [self updateCustomVolumeView];
+    [self updateSystemVolume];
+}
+
 - (void)verticalMoveEnd:(UIPanGestureRecognizer *)pan
 {
-    _volumeSliderBeginValue = _volumeView.volumeSlider.value;
+    _volumeSliderBeginValue = self.currentVolume;
+}
+
+#pragma mark 获取系统音量
+- (CGFloat)deviceVolume
+{
+    return [[AVAudioSession sharedInstance] outputVolume];
+}
+
+#pragma mark  系统音量变化(通知)
+- (void)volumeChanged:(NSNotification *)notification
+{
+    _currentVolume = [notification.userInfo[@"AVSystemController_AudioVolumeNotificationParameter"] floatValue];
+    [self updateSystemVolume];
+    [self updateCustomVolumeView];
+}
+
+#pragma mark - 拖动音量滑块
+- (void)volumeViewDidDragging:(SZMovieVolumeView *)volumeView
+{
+    self.currentVolume = volumeView.volumeSlider.value;
+    [self updateSystemVolume];
 }
 
 - (void)showAroundingViews
@@ -540,10 +655,9 @@ typedef NS_ENUM(NSUInteger, PanGestureRecognizerDirection) {
 //做任何操作之前调用此方法，重新计时，3秒后隐藏视图
 - (void)viewNoDismiss
 {
-    [UIView cancelPreviousPerformRequestsWithTarget:self selector:@selector(hideAroundingViews) object:nil];
-    [self performSelector:@selector(hideAroundingViews) withObject:nil afterDelay:3];
+//    [UIView cancelPreviousPerformRequestsWithTarget:self selector:@selector(hideAroundingViews) object:nil];
+//    [self performSelector:@selector(hideAroundingViews) withObject:nil afterDelay:3];
 }
-
 
 - (void)dealloc {
     [self.playerItem removeObserver:self forKeyPath:@"status" context:nil];
@@ -551,6 +665,9 @@ typedef NS_ENUM(NSUInteger, PanGestureRecognizerDirection) {
     [self.playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty" context:nil];
     [self.playerItem removeObserver:self forKeyPath:@"playbackLikelyToKeepUp" context:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:self.playerItem];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"AVSystemController_SystemVolumeDidChangeNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+    [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
 }
 
 #pragma mark - 屏幕旋转

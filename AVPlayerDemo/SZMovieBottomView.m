@@ -50,8 +50,8 @@ static const CGFloat timeLabelW = 80;
     [self addSubview:_progressView];
     
     _movieProgressSlider = [[UISlider alloc] init];
-    [_movieProgressSlider setThumbImage:[UIImage imageNamed:@"progressThumb"] forState:UIControlStateHighlighted];
-    [_movieProgressSlider setThumbImage:[UIImage imageNamed:@"progressThumb"] forState:UIControlStateNormal];
+    [_movieProgressSlider setThumbImage:[UIImage imageNamed:@"ico_palyer_circle"] forState:UIControlStateHighlighted];
+    [_movieProgressSlider setThumbImage:[UIImage imageNamed:@"ico_palyer_circle"] forState:UIControlStateNormal];
     [_movieProgressSlider addTarget:self action:@selector(scrubbingDidBegin) forControlEvents:UIControlEventTouchDown];
     [_movieProgressSlider addTarget:self action:@selector(scrubbingDidEnd) forControlEvents:(UIControlEventTouchUpInside | UIControlEventTouchCancel)];
     [_movieProgressSlider addTarget:self action:@selector(scrubbing) forControlEvents:UIControlEventValueChanged];

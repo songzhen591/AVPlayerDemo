@@ -14,4 +14,9 @@
 
 @property (strong, nonatomic) UILabel *durationLabel;
 
+/**
+ *  是否正在快进
+ */
+@property (assign, nonatomic) BOOL isGoForward;
+
 @end
